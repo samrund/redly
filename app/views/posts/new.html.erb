@@ -1,18 +1,27 @@
 <%= form_for @post do |f| %>
-  <fieldset>
+
+
+  <fieldset class="<%="error'' if f.object.errors.messages.include? :title" %>">"
+
     <%= f.label :title %>
     <%= f.text_field :title %>
   </fieldset>
 
+<% if f.object.link? %>
   <fieldset>
     <%= f.label :link %>
     <%= f.text_field :link %>
   </fieldset>
+<% end %>
 
-  <!-- <fieldset>
-    <%# f.label :body %>
-    <%# f.text_area :body %>
-  </fieldset> -->
+<% if f.object.text? %>
+  <fieldset>
+    <%= f.label :body %>
+    <%= f.text_area :body %>
+  </fieldset>
+<% end %>
 
-  <%= f.submit %>
+<%= f.hidden_field :post_type%>
+<%= f.submit %>
+
 <% end %>
