@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_action :find_post, only: [:show, :edit, :update]
+  before_action :find_post, only: [:show, :edit, :update, :destroy]
 
   def index
     @posts = Post.all
@@ -12,13 +12,12 @@ class PostsController < ApplicationController
   end
 
   def update
-      @post = Post.find params[:id]
-      if @post.update params.require(:post).permit(:title, :link, :body, :post_type)
-        redirect_to post_path(@post), flash: { notice: 'Thank you for updating your post.' }
-      else
-        flash.now[:error] = @post.errors.full_messages
-        render :edit
-      end
+    if @post.update post_params
+      redirect_to post_path(@post), flash: { notice: 'Thank you for updating your post.' }
+    else
+      flash.now[:error] = @post.errors.full_messages
+      render :edit
+    end
   end
 
   def new
@@ -31,9 +30,16 @@ class PostsController < ApplicationController
     if @post.save
       redirect_to posts_path, flash: { notice: 'Thank you for submitting your post.' }
     else
-      @fields_with_problems = @post.errors.messages.keys
       flash.now[:error] = @post.errors.full_messages
       render :new
+    end
+  end
+
+  def destroy
+    if @post.destroy
+      redirect_to posts_path, flash: { notice: 'Your post has been removed.' }
+    else
+      redirect_to post_path(@post), flash: { error: 'We were unable to remove that post.' }
     end
   end
 
@@ -44,8 +50,6 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    @post = Post.new params.require(:post).permit(:title, :link, :body, :post_type)
+    params.require(:post).permit(:title, :link, :body, :post_type)
   end
-
-
 end
